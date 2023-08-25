@@ -1,4 +1,8 @@
-# automate the data generation process
+# To automate the data generation process of FarmDyn
+# Author: Linmei Shang & David Schäfer
+# Institute for Food and Resource Economics, Universität Bonn, Germany
+# Date: 25.08.2023
+
 #%%
 import pathlib
 from pathlib import Path
@@ -8,15 +12,10 @@ import shutil
 import subprocess
 import sched, time
 import psutil
-#%%
-def terminate(ProcessName):
-    os.system('taskkill /im ' + ProcessName)
-terminate('chrome.exe')
-
-terminate('gams.exe')
 
 
 #%%
+# Define a function to run FarmDyn from batch file
 def runFarmDynfromBatch(FarmDynDir, IniFile, XMLFile, BATCHDir, BATCHFile):
     # Make subdirectories
     GUIDir = os.path.join(FarmDynDir, "GUI")
@@ -38,41 +37,43 @@ def runFarmDynfromBatch(FarmDynDir, IniFile, XMLFile, BATCHDir, BATCHFile):
         f.write("\n".join(b))
 
     # Execute farmdyn in batch mode
-    #os.system(runbat)
-    batch_process = subprocess.Popen(runbat, shell=True) # With this batch process start running
-    # Simulate running the batch file for some time
-    
-    
-# Start the first FarmDyn run 
-# Example usage
-FarmDynDir = r'C:\schaefer_shang\Farmdyn_v1_Scenario_SimBase3'
-IniFile = "dairydyn.ini"
-XMLFile = "dairydyn_default.xml"
-BATCHDir = r'C:\schaefer_shang\Farmdyn_v1_Scenario_SimBase3\GUI'
-BATCHFile = "batch_arable_experiment.txt"
+    batch_process = subprocess.Popen(runbat, shell=True) 
 
-runFarmDynfromBatch(FarmDynDir, IniFile, XMLFile, BATCHDir, BATCHFile)  # 10 minutes
+    
+ 
+# Start the initial run of FarmDyn run 
+FarmDynDir = r'C:\schaefer_shang\Farmdyn_v1_Scenario_SimBase3' # Replace this with your FarmDyn folder
+IniFile = "dairydyn.ini"  # This should stay like this
+XMLFile = "dairydyn_default.xml" # This should stay like this
+BATCHDir = r'C:\schaefer_shang\Farmdyn_v1_Scenario_SimBase3\GUI'  # Replace this with your FarmDyn GUI folder
+# In the GUI file, there must be a bacth file in txt format. This file defines e.g. number of experiments
+BATCHFile = "batch_arable_experiment.txt" # Replace this with your batch file, which must be in the GUI folder!
+
+# Start the initial FarmDyn run, the draws are then saved in ".../results/expFarms" of your FarmDyn folder
+runFarmDynfromBatch(FarmDynDir, IniFile, XMLFile, BATCHDir, BATCHFile) 
 
 
 # %%
-def automate(timestep):
+# Define a function to automatically check if the result folder still updates. 
+# If there are no updates after max_pause minutes, then the saved data will be moved to a new folder, and FarmDyn will be restarted.
+def automate(max_pause):
     
-    f = Path('C:/schaefer_shang/Farmdyn_v1_Scenario_SimBase3/results/expFarms')
+    f = Path('C:/schaefer_shang/Farmdyn_v1_Scenario_SimBase3/results/expFarms') # Only replace this with your FarmDyn folder until "/results/expFarms" 
     now = datetime.now()
     last_modified = os.path.getmtime(f)
     last_modified = datetime.fromtimestamp(last_modified)
     distance = now - last_modified
     print(distance)
     
-    if distance > timedelta(minutes = timestep):
+    if distance > timedelta(minutes = max_pause): 
         
         print('New start is needed.')
         # Move data
         source_dir = f
         # Leaf directory 
-        directory = datetime.now().strftime("%Y%m%d%H%M")
+        directory = datetime.now().strftime("%Y%m%d%H%M") # This will create a folder named by time 
         # Parent Directories 
-        parent_dir = r'C:\schaefer_shang\Farmdyn_v1_Scenario_SimBase3\results\LinMeiResults'   
+        parent_dir = r'C:\schaefer_shang\Farmdyn_v1_Scenario_SimBase3\results\LinMeiResults'  # Replace this with the folder to where you want to move the generated data 
         # Path 
         target_dir = os.path.join(parent_dir, directory) 
         try:   
@@ -97,21 +98,21 @@ def automate(timestep):
         print("Wait")
     
     
-# %%
-timestep = 10  # in minutes , if the result folder does not update longer than X minutes, then move data and restart FarmDyn
-
-# check every 600 seconds
-
-def do_something(scheduler): 
+# Define a scheduler to automatically check update and restart FarmDyn
+def automation(scheduler): 
     # schedule the next call first
-    scheduler.enter(300, 1, do_something, (scheduler,))
+    scheduler.enter(check_timer, 1, automation, (scheduler,))
     # run the scheduled function
-    automate(timestep)
-    
-my_scheduler = sched.scheduler(time.time, time.sleep)
-my_scheduler.enter(300, 1, do_something, (my_scheduler,))
-my_scheduler.run()
+    automate(max_pause)
 
-#%%
+
+# %%
+# Define your own max_pause abd check_timer
+max_pause = 10  # in X minutes, if the result folder ".../results/expFarms" does not update longer than X minutes, then move data to new folder and restart FarmDyn
+check_timer = 300 # in seconds, every X seconds check if there are still updates in the result folder
+
+my_scheduler = sched.scheduler(time.time, time.sleep)
+my_scheduler.enter(check_timer, 1, automation, (my_scheduler,))
+my_scheduler.run()
 
 
