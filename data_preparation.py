@@ -13,12 +13,12 @@ import matplotlib.pyplot as plt
 #%%
 ####################################################################################################################
 # load parquet data set
-path = r'N:\agpo\work2\MindStep\WP_4\WP4_Task_4_5\MindStep_Surrogate\DataCollection'
+path = './DataCollection'
 
 os.chdir(path)
 print("Current Working Directory " , os.getcwd())
 
-all_parquets = glob.glob(os.path.join(path+'\\total_df_*.parquet.gzip'))
+all_parquets = glob.glob("total_df_2023*.parquet.gzip")
 
 print(all_parquets)
 
@@ -30,10 +30,6 @@ print(df)
 # load df from parquet
 df = pd.read_parquet(df)
 print(df.shape)
-df.T.to_excel("RedZone_800.xlsx")
-#%%
-
-# print(df['interestGain__'])
 
 #%%
 # Select draws which does not habe winter barley prodution
@@ -42,14 +38,9 @@ df = df.drop(df[wb_condition].index)
 print(df.shape)
 
 #%%
-
-# df['Liquidity__'].min()
-# df['Liquidity__'].min()
-
-#%%
 ####################################################################################################################
 # Define inputs and outputs
-path = r'N:\agpo\work2\MindStep\WP_4\WP4_Task_4_5\MindStep_Surrogate\DataPreparation'
+path = '../DataPreparation'
 os.chdir(path)
 print('Current Working Directory ' , os.getcwd())
 
@@ -74,7 +65,7 @@ print('shape of Y_all:', Y_all.shape)
 
 #%%
 # define the name of dir to be created 
-path = r'N:\agpo\work2\MindStep\WP_4\WP4_Task_4_5\MindStep_Surrogate\DataPreparation\DataPreparation'+ datetime.now().strftime('_%Y%m%d%H%M')
+path = './DataPreparation'+ datetime.now().strftime('_%Y%m%d%H%M')
 
 try:
     os.makedirs(path)
@@ -135,11 +126,6 @@ X_all.hist(bins=30, figsize=(100, 100))
 plt.savefig('X_all.png')
 Y_all.hist(bins=30, figsize=(100, 100))
 plt.savefig('Y_all.png')
-
-#%%
-# Save 500 draws for inspection
-# Y_all[0:500].to_excel('Y_500_'+ datetime.now().strftime('_%Y%m%d')+'.xlsx')
-# X_all[0:500].to_excel('X_500_'+ datetime.now().strftime('_%Y%m%d')+'.xlsx')
 
 #%%
 
