@@ -4,7 +4,7 @@ Working Package 4.5 is a sub-project of the EU project MindStep (https://mind-st
 
 ## Overview
 
-This repository contains 5 folders. Their functions are decribed below.
+This repository contains 4 folders. Their functions are decribed below.
 
 ### 1. Data Collection
 
@@ -54,38 +54,40 @@ The model takes 83 input variables and predicts for 122 output variables. See th
 
 
 ### Step 1: Clone the repository
-
-git clone https://gitlab.com/test5623246/bike-demand.git
-
+```
+git clone https://github.com/linmeishang/MindStep-WP4.5.git
+```
 
 Go to your local path using:
-
+```
 cd <your path>\MindStepWP4_5
-
+```
 
 
 ### Step 2: Create a new python environment with python 3.10 if you don't have one
-
+```
 conda create -n FarmLin python=3.10
 
 conda activate FarmLin
-
+```
 
 ### Step 3: Install the requirments
-
+```
 pip install -r requirements.txt
+```
 
-
-### Step 4: Train models or use our trained model to predict
+### Step 4: Train models
 
 
 You can train new models by running:
-
+```
 python train.py
+```
 
 ### Step 5: Employ the trained surrogate model
-
+```
 python FarmLin.py
+```
 
 ## Funding
 
