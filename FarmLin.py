@@ -1,4 +1,5 @@
 # This is the code of deploying FarmLin
+# Copy paste the trained FarmLin.h5 from the model folder to the data preparation folder.
 # Note: FarmLin takes pandas.core.frame.DataFrame or numpy.array, and produces numpy.ndarray
 # Conda activate FarmLin
 #%%
@@ -32,7 +33,7 @@ from sklearn.preprocessing import MinMaxScaler # @Changxing: This line is new
 
 #%%
 # find the latest DataPreparation
-path = r'N:\agpo\work2\MindStep\WP_4\WP4_Task_4_5\MindStep_Surrogate\DataPreparation'
+path ='./DataPreparation'
 
 all_folders = glob.glob(os.path.join(path + '/Da*/'))
 
@@ -51,10 +52,10 @@ Y_train_raw = pd.read_parquet('Y_train_raw.parquet.gzip')
 X_test_raw = pd.read_parquet('X_test_raw.parquet.gzip') 
 Y_test_raw = pd.read_parquet('Y_test_raw.parquet.gzip')
 
-print('shape of X_train:', X_train_raw.shape)
-print('shape of Y_train:', Y_train_raw.shape)
-print('shape of X_test:', X_test_raw.shape)
-print('shape of Y_test:', Y_test_raw.shape)
+print('shape of X_train raw:', X_train_raw.shape)
+print('shape of Y_train raw:', Y_train_raw.shape)
+print('shape of X_test raw:', X_test_raw.shape)
+print('shape of Y_test raw:', Y_test_raw.shape)
 
 
 #%%
